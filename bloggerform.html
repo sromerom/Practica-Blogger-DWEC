@@ -9,7 +9,63 @@
 </head>
 
 <body>
+    <form action="BLOGGERFORM.html" method="POST"></form>
+    <label for="title">Titol:</label>
+    <input id="title" type="text" placeholder="Post title">
+    <label for="content">Contingut: </label>
+    <textarea name="contentPost" id="content" cols="30" rows="10"></textarea>
+    <button id="submit">Crea</button>
+    </form>
 
+
+    <script type="module">
+        import { Post } from "./model/post.js";
+        import { createPost } from './servici/createPost.js';
+        import { updatePost } from './servici/updatePost.js';
+        import { getPostById } from './servici/getPostById.js';
+
+        document.querySelector("#submit").addEventListener("click", envia);
+        const url = new URL(document.location);
+        const params = url.searchParams;
+        const idPost = params.get("idPost");
+        //console.log(idPost)
+
+        async function envia() {
+            let title = document.querySelector("#title").value;
+            let content = document.querySelector("#content").value;
+            //console.log(title, content)
+            if (idPost) {
+                console.log("Anem a modificar");
+                const post = await getPostById(idPost);
+
+                if (title != "" || content != "") {
+                    //await updatePost(new Post(undefined, undefined, undefined, undefined, undefined, undefined, title, content, undefined));
+                }
+            } else {
+                console.log("Anem a crear-ne un de nou");
+                if (title != "" || content != "") {
+                    console.log("Creando...")
+                    await createPost(new Post(undefined, undefined, undefined, undefined, undefined, undefined, title, content, undefined));
+                }
+            }
+        }
+
+        function soloCopio() {
+            console.log("Hola, yo solo copio");
+        }
+
+        function soloActualizo() {
+            console.log("Hola, yo solo actualizo");
+        }
+
+        async function carregaPost() {
+            const post = await getPostById(idPost);
+            console.log(post);
+            document.querySelector("#title").value = post.title;
+            document.querySelector("#content").value = post.content;
+            return post;
+        };
+    </script>
 </body>
 
 </html>

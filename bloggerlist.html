@@ -9,7 +9,44 @@
 </head>
 
 <body>
+    <a href="BLOGGERFORM.html">Crear un post</a>
+    <div id="taula"></div>
+    <script type="module">
+        import { getBlogId } from './servici/getBlogId.js';
+        import { getPost } from './servici/getPosts.js';
+        (async function() {
+            let blogId = await getBlogId();
+            let post = await getPost(blogId);
+            console.log("Blog ID: " + blogId);
+            //console.log(post)
 
+            mostraPosts(post);
+        })();
+
+
+        function mostraPosts(posts) {
+            let taula = "<table>";
+            taula += "<tr>";
+            taula += "<th>Titol</th>";
+            taula += "<th>Idioma original</th>";
+            taula += "<th>Idioma traduit</th>";
+            taula += "<th>Edita</th>";
+            taula += "<th>Borra</th>"
+            taula +="</tr>";
+            posts.forEach(post => {
+                console.log(post)
+                taula += "<tr>";
+                taula += `<th>${post.title}</th>`;
+                taula += `<th>Ro4</th>`;
+                taula += `<th>Ro4</th>`;
+                taula += `<th><a href="BLOGGERFORM.html?idPost=${post.idPost}">Edita</a></th>`;
+                taula += '<th><a href="borrar.html">Elimina</a></th>';
+                taula +="</tr>";
+            });
+            taula += "</table>";
+            document.querySelector("#taula").innerHTML = taula;
+        }
+    </script>
 </body>
 
 </html>

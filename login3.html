@@ -2,8 +2,7 @@
 
 <head>
     <meta name="google-signin-scope" content="profile email https://www.googleapis.com/auth/blogger">
-    <meta name="google-signin-client_id"
-        content="904329681840-9r3m3ldik4sik9poh1j6up3gdkrls4q6.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="904329681840-9r3m3ldik4sik9poh1j6up3gdkrls4q6.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
@@ -15,7 +14,7 @@
             var user = googleUser.getAuthResponse();
             console.log(user)
             localStorage.setItem("tokenAccess", user.access_token);
-            request();
+            //request();
         }
 
 
@@ -23,13 +22,13 @@
             let response = await fetch("https://www.googleapis.com/blogger/v3/users/self/blogs", {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Bearer '+localStorage.getItem("tokenAccess")
+                    'Authorization': 'Bearer ' + localStorage.getItem("tokenAccess")
                 },
             });
 
             let responseJSON = await response.json();
             console.log(responseJSON)
-        } 
+        }
     </script>
 </body>
 
