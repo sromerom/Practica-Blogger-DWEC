@@ -5,15 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+            selector: '#content',
+            init_instance_callback: function (editor) {
+                editor.on('SetContent', function (e) {
+                    console.log(e.content);
+                });
+            }
+        });
+    </script>
     <title>Document</title>
 </head>
 
 <body>
-    <form action="BLOGGERFORM.html" method="POST"></form>
     <label for="title">Titol:</label>
     <input id="title" type="text" placeholder="Post title">
+    <select id="idiomaOriginal">
+        <option value="es">Spanish</option>
+        <option value="ca">Catalan</option>
+    </select>
+    </select>
+    <select id="idiomaTraduir"></select>
+    <button id="submit2">Insereix</button>
     <label for="content">Contingut: </label>
     <textarea name="contentPost" id="content" cols="30" rows="10"></textarea>
+    <button id="tradueix">Traduir</button>
     <button id="submit">Crea</button>
     </form>
 
@@ -23,48 +41,102 @@
         import { createPost } from './servici/createPost.js';
         import { updatePost } from './servici/updatePost.js';
         import { getPostById } from './servici/getPostById.js';
+        import { getLanguages } from './servici/getLanguages.js';
+        import { translate } from './servici/translate.js';
 
+        carregaOptions();
         document.querySelector("#submit").addEventListener("click", envia);
+        document.querySelector("#tradueix").addEventListener("click", traduir);
+
+
         const url = new URL(document.location);
         const params = url.searchParams;
         const idPost = params.get("idPost");
+        var actualPost;
         //console.log(idPost)
+
+        if (idPost) {
+            carregaPost();
+        }
 
         async function envia() {
             let title = document.querySelector("#title").value;
-            let content = document.querySelector("#content").value;
+            let content = (tinymce.get('content').getContent());
+            let idiomes = [document.querySelector("#idiomaOriginal").value, document.querySelector("#idiomaTraduir").value];
+            console.log(idiomes)
             //console.log(title, content)
             if (idPost) {
                 console.log("Anem a modificar");
-                const post = await getPostById(idPost);
-
                 if (title != "" || content != "") {
-                    //await updatePost(new Post(undefined, undefined, undefined, undefined, undefined, undefined, title, content, undefined));
+                    (async function () {
+                        const post = await getPostById(idPost);
+                        //constructor(idPost, idBlog, author, published, updated, url, title, content, labels)
+                        await updatePost(new Post(post.idPost, post.idBlog, post.author, post.published, undefined, post.url, title, content, idiomes));
+                    })();
                 }
             } else {
                 console.log("Anem a crear-ne un de nou");
                 if (title != "" || content != "") {
-                    console.log("Creando...")
-                    await createPost(new Post(undefined, undefined, undefined, undefined, undefined, undefined, title, content, undefined));
+                    console.log("Creando...");
+                    console.log("content1: " + content)
+                    console.log("content1: " + (tinymce.get('content').getContent()));
+                    await createPost(new Post(undefined, undefined, undefined, undefined, undefined, undefined, title, content, idiomes));
                 }
             }
         }
 
-        function soloCopio() {
-            console.log("Hola, yo solo copio");
-        }
 
-        function soloActualizo() {
-            console.log("Hola, yo solo actualizo");
-        }
+        async function carregaOptions() {
+            const allLanguages = await getLanguages();
+            //console.log(allLanguages)
+            //let select = document.getElementById("idiomaOriginal");
+            let select2 = document.getElementById("idiomaTraduir");
+
+            allLanguages.forEach(language => {
+                //let option = document.createElement("option");
+                let option2 = document.createElement("option");
+                option2.setAttribute("value", language.code);
+                //option.text = language.name;
+                option2.text = language.name;
+                //select.add(option);
+                select2.add(option2);
+            });
+
+        };
 
         async function carregaPost() {
             const post = await getPostById(idPost);
+            console.log(post.labels)
             console.log(post);
-            document.querySelector("#title").value = post.title;
-            document.querySelector("#content").value = post.content;
+
+
+            let contentTraduit = await translate(post.labels[1], post.labels[0], post.content);
+            let titleTraduit = await translate(post.labels[1], post.labels[0], post.title);
+
+            tinymce.activeEditor.setContent(contentTraduit);
+            document.querySelector("#title").value = titleTraduit;
             return post;
         };
+
+
+        async function traduir() {
+
+            let idiomaOriginal = document.querySelector("#idiomaOriginal");
+            let idiomaATraduir = document.querySelector("#idiomaTraduir");
+            let codeIdiomaOriginal = idiomaOriginal.options[idiomaOriginal.selectedIndex].value;
+            let codeIdiomaATraduir = idiomaATraduir.options[idiomaATraduir.selectedIndex].value;
+
+            let content = (tinymce.get('content').getContent());
+            let title = document.querySelector("#title").value;
+
+            console.log(title)
+            let contentTraduit = await translate(codeIdiomaOriginal, codeIdiomaATraduir, content);
+            let titleTraduit = await translate(codeIdiomaOriginal, codeIdiomaATraduir, title);
+
+            tinymce.activeEditor.setContent(contentTraduit);
+            document.querySelector("#title").value = titleTraduit;
+
+        }
     </script>
 </body>
 

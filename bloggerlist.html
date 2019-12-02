@@ -10,19 +10,44 @@
 
 <body>
     <a href="BLOGGERFORM.html">Crear un post</a>
+    <label for="titol">Cerca per un titol de post</label>
+    <input id="titol" type="text">
     <div id="taula"></div>
     <script type="module">
         import { getBlogId } from './servici/getBlogId.js';
         import { getPost } from './servici/getPosts.js';
-        (async function() {
+        import { deletePost } from './servici/deletePost.js'
+        let postsTotals = [];
+
+
+        (async function () {
             let blogId = await getBlogId();
             let post = await getPost(blogId);
-            console.log("Blog ID: " + blogId);
-            //console.log(post)
-
+            postsTotals = post;
+            console.log(postsTotals);
             mostraPosts(post);
-        })();
 
+            let deleteButtons = document.querySelectorAll(".delete");
+            deleteButtons.forEach(function (elem) {
+                elem.addEventListener("click", async function () {
+                    const idBlogActual = elem.attributes[1].nodeValue;
+                    const idPostActual = elem.attributes[2].nodeValue;
+                    await deletePost(idBlogActual, idPostActual);
+
+                    /*
+                    if(confirm("Are you sure to delete this record?")) {
+                        console.log("Eliminat")
+                    }
+                    */
+                });
+            });
+
+            document.querySelector("#titol").addEventListener("input", function () {
+                filtrar();
+            })
+
+
+        })();
 
         function mostraPosts(posts) {
             let taula = "<table>";
@@ -32,20 +57,33 @@
             taula += "<th>Idioma traduit</th>";
             taula += "<th>Edita</th>";
             taula += "<th>Borra</th>"
-            taula +="</tr>";
+            taula += "</tr>";
             posts.forEach(post => {
-                console.log(post)
                 taula += "<tr>";
                 taula += `<th>${post.title}</th>`;
                 taula += `<th>Ro4</th>`;
                 taula += `<th>Ro4</th>`;
                 taula += `<th><a href="BLOGGERFORM.html?idPost=${post.idPost}">Edita</a></th>`;
-                taula += '<th><a href="borrar.html">Elimina</a></th>';
-                taula +="</tr>";
+                //taula += `<th><a href="#" blogId="2" postId="2" class="aaaa">Elimina</a></th>`;
+                taula += `<th><button class="delete" blogId="${post.idBlog}" postId="${post.idPost}">Delete</button></th>`;
+                taula += "</tr>";
             });
             taula += "</table>";
             document.querySelector("#taula").innerHTML = taula;
+
+            document.querySelector("#titol").disabled = false;
         }
+
+        function filtrar() {
+            let valor = document.querySelector('#titol').value;
+
+            let posts = postsTotals.filter(function (post) {
+                return post.title.indexOf(valor) != -1
+            })
+
+            mostraPosts(posts);
+
+        };
     </script>
 </body>
 

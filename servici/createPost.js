@@ -2,7 +2,7 @@ import { getBlogId } from './getBlogId.js';
 
 export async function createPost(post) {
 
-    console.log(post)
+    //console.log(post)
     const idBlog = await getBlogId();
     const url = `https://www.googleapis.com/blogger/v3/blogs/${idBlog}/posts/`;
     const toJSON = JSON.stringify({
@@ -11,9 +11,9 @@ export async function createPost(post) {
             "id": idBlog
         },
         "title": post.title,
-        "content": post.content
+        "content": post.content,
+        "labels" : post.labels
     });
-//"labels" : ["funciona"]
     
     const createFetch = fetch(url, {
         method: 'POST',
