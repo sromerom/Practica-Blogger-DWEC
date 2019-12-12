@@ -3,7 +3,7 @@
 <head>
     <meta name="google-signin-scope" content="profile email https://www.googleapis.com/auth/blogger">
     <meta name="google-signin-client_id"
-        content="904329681840-9r3m3ldik4sik9poh1j6up3gdkrls4q6.apps.googleusercontent.com">
+        content="458645631589-l889c1eooh3fccmr2rfu6g9v3cetvqvv.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
 </head>
 
@@ -11,27 +11,10 @@
     <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
     <script>
         function onSignIn(googleUser) {
-            // Useful data for your client-side scripts:
             var user = googleUser.getAuthResponse();
-            console.log(user)
             localStorage.setItem("tokenAccess", user.access_token);
-            //request();
             window.location.replace("BLOGGERLIST.html");
         }
-
-        /*
-                async function request() {
-                    let response = await fetch("https://www.googleapis.com/blogger/v3/users/self/blogs", {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + localStorage.getItem("tokenAccess")
-                        },
-                    });
-
-                    let responseJSON = await response.json();
-                    console.log(responseJSON)
-                }
-                */
     </script>
 </body>
 

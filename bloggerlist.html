@@ -5,26 +5,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <title>BloggerList</title>
 </head>
 
-<body>
-    <a href="BLOGGERFORM.html">Crear un post</a>
-    <label for="titol">Cerca per un titol de post</label>
-    <input id="titol" type="text">
-    <div id="taula"></div>
+<body class="m-5">
+    <div class="d-flex justify-content-between">
+        <a href="BLOGGERFORM.html"><button class="btn btn-primary">Crea un post</button></a>
+        <div id="alert"></div>
+        <div>
+            <label for="titol">Cerca per un titol de post</label>
+            <input id="titol" type="text">
+        </div>
+    </div>
+    <div id="taula" class="m-5"></div>
+    <a class="d-flex justify-content-center" href="login.html"><button class="btn btn-info">Ves al login</button></a>
+
+
     <script type="module">
         import { getBlogId } from './servici/getBlogId.js';
         import { getPost } from './servici/getPosts.js';
         import { deletePost } from './servici/deletePost.js'
+        import { creaNotificacio } from './servici/confirmacions.js';
         let postsTotals = [];
 
 
+        //Mostram els posts
         (async function () {
             let blogId = await getBlogId();
             let post = await getPost(blogId);
             postsTotals = post;
-            console.log(postsTotals);
             mostraPosts(post);
 
             let deleteButtons = document.querySelectorAll(".delete");
@@ -32,13 +52,11 @@
                 elem.addEventListener("click", async function () {
                     const idBlogActual = elem.attributes[1].nodeValue;
                     const idPostActual = elem.attributes[2].nodeValue;
-                    await deletePost(idBlogActual, idPostActual);
 
-                    /*
-                    if(confirm("Are you sure to delete this record?")) {
-                        console.log("Eliminat")
+                    if (confirm("Estas segur que vols eliminar-ho?")) {
+                        await deletePost(idBlogActual, idPostActual);
+                        creaNotificacio("alert-danger");
                     }
-                    */
                 });
             });
 
@@ -50,28 +68,27 @@
         })();
 
         function mostraPosts(posts) {
-            let taula = "<table>";
+            let taula = '<table class="table table-striped">';
             taula += "<tr>";
             taula += "<th>Titol</th>";
             taula += "<th>Idioma original</th>";
             taula += "<th>Idioma traduit</th>";
-            taula += "<th>Edita</th>";
-            taula += "<th>Borra</th>"
+            taula += "<th></th>";
+            taula += "<th></th>"
             taula += "</tr>";
             posts.forEach(post => {
                 taula += "<tr>";
-                taula += `<th>${post.title}</th>`;
-                taula += `<th>Ro4</th>`;
-                taula += `<th>Ro4</th>`;
-                taula += `<th><a href="BLOGGERFORM.html?idPost=${post.idPost}">Edita</a></th>`;
-                //taula += `<th><a href="#" blogId="2" postId="2" class="aaaa">Elimina</a></th>`;
-                taula += `<th><button class="delete" blogId="${post.idBlog}" postId="${post.idPost}">Delete</button></th>`;
+                taula += `<th scope="row">${post.title}</th>`;
+                taula += `<td>${post.labels[0]}</td>`;
+                taula += `<td>${post.labels[1]}</td>`;
+                taula += `<td><a href="BLOGGERFORM.html?idPost=${post.idPost}"><button class="btn btn-success">Edita</button></a></td>`;
+                taula += `<th><button class=" delete btn btn-danger" data-blogId="${post.idBlog}" data-postId="${post.idPost}">Elimina</button></th>`;
                 taula += "</tr>";
             });
             taula += "</table>";
             document.querySelector("#taula").innerHTML = taula;
-
             document.querySelector("#titol").disabled = false;
+            
         }
 
         function filtrar() {

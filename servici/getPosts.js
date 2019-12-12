@@ -10,8 +10,8 @@ export async function getPost(blogId) {
     });
 
     let responseJSON = await response.json();
-    //(idPost, idBlog, author, published, updated, url, title, content)
     
+    //(idPost, idBlog, author, published, updated, url, title, content)
     let fetchToObject = responseJSON.items.map(post=> {
         return new Post(post.id, post.blog.id, post.author, post.published, post.updated, post.url, post.title, post.content, post.labels);
     })

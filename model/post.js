@@ -10,16 +10,4 @@ export class Post {
         this.content = content;
         this.labels = labels;
     }
-
-    /*
-    constructor(idBlog, author, published, updated, url, title, content) {
-        this.idBlog = idBlog
-        this.author = author;
-        this.published = published;
-        this.updated = updated;
-        this.url = url;
-        this.title = title;
-        this.content = content;
-    }
-    */
 }

@@ -1,8 +1,7 @@
 import { getBlogId } from './getBlogId.js';
 
 export async function createPost(post) {
-
-    //console.log(post)
+    
     const idBlog = await getBlogId();
     const url = `https://www.googleapis.com/blogger/v3/blogs/${idBlog}/posts/`;
     const toJSON = JSON.stringify({
@@ -15,7 +14,7 @@ export async function createPost(post) {
         "labels" : post.labels
     });
     
-    const createFetch = fetch(url, {
+    await fetch(url, {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer ' + localStorage.getItem("tokenAccess"),
