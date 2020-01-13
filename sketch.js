@@ -48,7 +48,7 @@ function gotResult(err, results) {
         console.log("Se añade: " + results[0].label);
         //addData(results[0].label);
     }
-    //classifyVideo();
+    classifyVideo();
 }
 
 function addData(alimentNou) {
