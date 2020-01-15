@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Streaming</title>
+</head>
+
+<body>
+    <video autoplay width="640" height="480"></video>
+    <textarea name="cdd" id="cdd" cols="30" rows="10"></textarea>
+    <button id="record">Start Record</button>
+    <button id="stop">Stop Record</button>
+    <div id="soundClips"></div>
+    <script>
+        if (navigator.mediaDevices) {
+            console.log('getUserMedia supported.');
+            let video;
+
+            var constraints = {
+                audio: true
+            };
+
+            var constraintsVideo = {
+                audio: false,
+                video: {
+                    width: {
+                        min: 640
+                    },
+                    height: {
+                        min: 480
+                    }
+                }
+            };
+
+            video = document.querySelector('video');
+            navigator.mediaDevices.getUserMedia(constraintsVideo)
+                .then(function(stream) {
+                    var videoTracks = stream.getVideoTracks();
+                    console.log('Got stream with constraints:', constraints);
+                    console.log('Using video device: ' + videoTracks[0].label);
+
+                    stream.onremovetrack = function() {
+                        console.log('Stream ended');
+                    };
+                    window.stream = stream; // make variable available to browser console
+                    video.srcObject = stream;
+                })
+            var chunks = [];
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(function(stream) {
+
+                    var mediaRecorder = new MediaRecorder(stream);
+                    var record = document.querySelector("#record");
+                    var stop = document.querySelector("#stop");
+
+                    record.onclick = function() {
+                        mediaRecorder.start();
+                        console.log(mediaRecorder.state);
+                        console.log("recorder started");
+                        record.style.background = "red";
+                        record.style.color = "black";
+                    }
+
+                    stop.onclick = function() {
+                        mediaRecorder.stop();
+                        console.log(mediaRecorder.state);
+                        console.log("recorder stopped");
+                        record.style.background = "";
+                        record.style.color = "";
+                    }
+
+                    mediaRecorder.onstop = async function(e) {
+                        console.log("data available after MediaRecorder.stop() called.");
+
+                        var clipContainer = document.createElement('article');
+                        var clipLabel = document.createElement('p');
+                        var audio = document.createElement('audio');
+                        var deleteButton = document.createElement('button');
+                        var soundClips = document.querySelector("#soundClips");
+                        clipContainer.classList.add('clip');
+                        audio.setAttribute('controls', '');
+                        deleteButton.innerHTML = "Delete";
+
+                        clipContainer.appendChild(audio);
+                        clipContainer.appendChild(clipLabel);
+                        clipContainer.appendChild(deleteButton);
+                        soundClips.appendChild(clipContainer);
+
+                        audio.controls = true;
+                        var blob = await new Blob(chunks, {
+                            'type': 'audio/webm; codecs=opus'
+                        });
+                        chunks = [];
+                        var audioURL = URL.createObjectURL(blob);
+                        audio.src = audioURL;
+                        //console.log(audioURL)
+                        console.log("recorder stopped");
+
+
+                        const b = await uploadAudioAsync(blob);
+                        console.log(b);
+                        const cdd = document.querySelector("#cdd").value = b[0].transcripcio;
+
+
+
+
+                        deleteButton.onclick = function(e) {
+                            evtTgt = e.target;
+                            evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+                        }
+                    }
+
+                    mediaRecorder.ondataavailable = function(e) {
+                        chunks.push(e.data);
+                    }
+                })
+        }
+
+        async function uploadAudioAsync(blob) {
+            console.log(blob);
+            let apiUrl = 'http://server247.cfgs.esliceu.net/bloggeri18n/blogger.php';
+            //let uriParts = uri.split('.');
+            //let fileType = uriParts[uriParts.length - 1];
+
+            let formData = new FormData();
+            formData.append('arxiu', blob);
+            formData.append('MethodName', 'transcribe_sync');
+            formData.append('params', "{}");
+
+            //console.log("posting " + blob + " to " + apiUrl);
+
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                body: formData
+            })
+
+            const responseJSON = await response.json();
+            return responseJSON;
+        }
+    </script>
+</body>
+
+</html>
