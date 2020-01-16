@@ -16,9 +16,6 @@ buttonCalc.addEventListener("click", function() {
     const tmb = calculTMB(sexe, pes, altura, edat);
     const calNecessaries = tmb * activitat;
 
-    if (pes) {
-        console.log("Estan tots!!!!");
-    }
     document.querySelector("#resultat").innerHTML = calNecessaries + " KCal";
 })
 

@@ -6,9 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/bloggerForm.css">
-    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <title>BloggerForm</title>
+</head>
+
+<body>
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>
@@ -23,10 +28,7 @@
             selector: '#content',
         });
     </script>
-    <title>BloggerForm</title>
-</head>
 
-<body>
 
     <div class="d-flex bd-highlight mb-3">
         <select class="bd-highlight" id="idiomaOriginal">
@@ -34,7 +36,8 @@
             <option value="ca">Catalan</option>
         </select>
         <select class="bd-highlight" id="idiomaTraduir"></select>
-        <a class="ml-auto bd-highlight" href="BLOGGERLIST.html"><button class="btn btn-primary">Llistat de posts</button></a>
+        <a class="ml-auto bd-highlight" href="BLOGGERLIST.html"><button class="btn btn-primary">Llistat de
+                posts</button></a>
     </div>
 
     <div class="form-group row">
@@ -60,12 +63,14 @@
 
     <script type="module">
         import { Post } from "./model/post.js";
-        import { createPost } from './servici/createPost.js';
-        import { updatePost } from './servici/updatePost.js';
-        import { getPostById } from './servici/getPostById.js';
-        import { getLanguages } from './servici/getLanguages.js';
-        import { translate } from './servici/translate.js';
-        import { creaNotificacio } from './servici/confirmacions.js';
+        //import { createPost } from './servici/createPost.js';
+        //import { updatePost } from './servici/updatePost.js';
+        //import { getPostById } from './servici/getPostById.js';
+        //import { getLanguages } from './servici/getLanguages.js';
+        //import { translate } from './servici/translate.js';
+        import { creaNotificacio } from './servei/confirmacions.js';
+        import { createPost, updatePost, getPostById, getLanguages, translate } from './servei/postServei.js';
+
 
         //Carregam les opcions al select
         (async function () {
@@ -126,7 +131,7 @@
             document.querySelector("#title").value = titleTraduit;
 
             document.querySelector("#idiomaOriginal").value = post.labels[0];
-            document.querySelector("#idiomaTraduir").value =  post.labels[1];
+            document.querySelector("#idiomaTraduir").value = post.labels[1];
 
         };
 
@@ -153,7 +158,7 @@
 
         }
     </script>
-    <script src="js/streaming.js"></script>
+    <script src="servei/streaming.js"></script>
 </body>
 
 </html>

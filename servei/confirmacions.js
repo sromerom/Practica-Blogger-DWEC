@@ -33,8 +33,4 @@ export function creaNotificacio(tipusNotificacio) {
     button.appendChild(span);
     div.appendChild(button);
     document.querySelector("#alert").appendChild(div);
-
-
-
-
 }
